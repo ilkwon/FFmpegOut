@@ -68,7 +68,7 @@ namespace FFmpegOut
         {
             switch (preset)
             {
-                case FFmpegPreset.H264Default:     return "-pix_fmt yuv420p";
+                case FFmpegPreset.H264Default:     return "-c:v libx264 -pix_fmt yuv420p";
                 case FFmpegPreset.H264Nvidia:      return "-c:v h264_nvenc -pix_fmt yuv420p";
                 case FFmpegPreset.H264Lossless420: return "-pix_fmt yuv420p -preset ultrafast -crf 0";
                 case FFmpegPreset.H264Lossless444: return "-pix_fmt yuv444p -preset ultrafast -crf 0";

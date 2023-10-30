@@ -8,7 +8,7 @@
         private const string UNITY_CAM_TEX_BYTE_FORMAT =
             "-pixel_format rgba -colorspace bt709 -f rawvideo -vcodec rawvideo";
 
-        private const string FFMPEG_LOGLEVEL = "-loglevel warning";
+        private const string FFMPEG_LOGLEVEL = "-loglevel info";
 
         private StreamFFmpegSession(string arguments) : base(arguments) { }
 

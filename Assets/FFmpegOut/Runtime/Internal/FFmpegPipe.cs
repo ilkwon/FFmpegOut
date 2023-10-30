@@ -32,8 +32,11 @@ namespace FFmpegOut
             // Start copy/pipe subthreads.
             _copyThread = new Thread(CopyThread);
             _pipeThread = new Thread(PipeThread);
+            _logThread = new Thread(LogMessageThread);
+
             _copyThread.Start();
             _pipeThread.Start();
+            _logThread.Start();
         }
 
         public void PushFrameData(NativeArray<byte> data)
@@ -71,6 +74,8 @@ namespace FFmpegOut
             _subprocess.StandardInput.Close();
             _subprocess.WaitForExit();
 
+            _logThread.Join();
+
             var outputReader = _subprocess.StandardError;
             var error = outputReader.ReadToEnd();
 
@@ -107,6 +112,9 @@ namespace FFmpegOut
                     "It should be explicitly closed or disposed " +
                     "before being garbage-collected."
                 );
+
+            if(_logThread != null && _logThread.IsAlive)
+                _logThread.Abort();
         }
 
         #endregion
@@ -116,6 +124,7 @@ namespace FFmpegOut
         Process _subprocess;
         Thread _copyThread;
         Thread _pipeThread;
+        Thread _logThread;
 
         AutoResetEvent _copyPing = new AutoResetEvent(false);
         AutoResetEvent _copyPong = new AutoResetEvent(false);
@@ -229,6 +238,19 @@ namespace FFmpegOut
             }
         }
 
+
+        void LogMessageThread()
+        {
+            var reader = _subprocess.StandardError;
+            string line;
+            while((line = reader.ReadLine()) != null)
+            {
+                //MainThreadDispatcher.Enqueue(() => {
+                //    DynamicLogMessage.Instance.LogMessage(line);
+                //});
+                UnityEngine.Debug.Log(line); // Unity 콘솔에 로그 출력 예시
+            }
+        }
         #endregion
     }
 }
